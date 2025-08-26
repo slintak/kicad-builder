@@ -9,7 +9,7 @@ RUN apt-get update && \
     cmark rsync xsltproc librsvg2-bin libnng1 libjpeg-dev zlib1g-dev \
     texlive-latex-base texlive-fonts-recommended texlive-latex-recommended texlive-latex-extra \
     texlive-science texlive-lang-european latexmk fonts-freefont-ttf \
-    build-essential
+    build-essential pandoc
 
 # Install KiCAD 9.0
 RUN add-apt-repository --yes ppa:kicad/kicad-9.0-releases && \
