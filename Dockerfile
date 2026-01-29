@@ -8,7 +8,7 @@ RUN apt-get update && \
     apt-get install -y software-properties-common wget git curl sudo python3-pip make \
     cmark rsync xsltproc librsvg2-bin libnng1 libjpeg-dev zlib1g-dev \
     texlive-latex-base texlive-fonts-recommended texlive-latex-recommended texlive-latex-extra \
-    texlive-science texlive-lang-european latexmk fonts-freefont-ttf \
+    texlive-extra-utils texlive-science texlive-lang-european latexmk fonts-freefont-ttf \
     build-essential pandoc
 
 # Install KiCAD 9.0
