@@ -9,7 +9,7 @@ and manufacturing outputs.
 ## Features
 
 - Ubuntu 22.04 base
-- KiCAD 9.x (via official PPA)
+- KiCAD 10.x (via official PPA)
 - KiKit for Gerber and PCB fabrication outputs
 - PcbDraw for high-quality PCB renders
 - LaTeX tools for PDF docs
@@ -65,7 +65,7 @@ docker run --rm -it -v $PWD:/workspace ghcr.io/slintak/kicad-builder:latest /bin
 
 Included tools
 
-* KiCAD 9.x
+* KiCAD 10.x
 * KiKit
 * PcbDraw (latest, from source)
 * Python 3, pip, and Markdown
