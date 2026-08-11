@@ -12,8 +12,8 @@ RUN apt-get update && \
     build-essential pandoc && \
     rm -rf /var/lib/apt/lists/*
 
-# Install KiCAD 9.0
-RUN add-apt-repository --yes ppa:kicad/kicad-9.0-releases && \
+# Install KiCAD 10.0
+RUN add-apt-repository --yes ppa:kicad/kicad-10.0-releases && \
     apt-get update && \
     apt-get install -y --no-install-recommends kicad kicad-footprints kicad-packages3d kicad-symbols && \
     rm -rf /var/lib/apt/lists/*
