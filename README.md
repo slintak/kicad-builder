@@ -8,8 +8,8 @@ and manufacturing outputs.
 
 ## Features
 
-- Ubuntu 22.04 base
-- KiCAD 10.x (via official PPA)
+- Ubuntu 26.04 LTS base
+- KiCad 10.0.7 (from the official KiCad PPA)
 - KiKit for Gerber and PCB fabrication outputs
 - PcbDraw for high-quality PCB renders
 - LaTeX tools for PDF docs
@@ -63,11 +63,43 @@ This opens a shell in /workspace (the default working directory).
 docker run --rm -it -v $PWD:/workspace ghcr.io/slintak/kicad-builder:latest /bin/bash
 ```
 
-Included tools
+## Versions
 
-* KiCAD 10.x
+The `latest` tag and the `10.0.7` tag contain these versions:
+
+| Tool | Version |
+| --- | --- |
+| Ubuntu | 26.04 LTS |
+| KiCad | 10.0.7 (PPA `kicad/kicad-10.0-releases`) |
+| Python | 3.14 (Ubuntu package) |
+| KiKit | 1.8.1 and later fixes from master, commit `958abd031e3d254d9777f6c192badbdb1c1c3757` |
+| PcbDraw | fork `slintak/PcbDraw`, commit `3dd07c63179172746e9f28facd8800814c2185a1` |
+| mistune | 2.0.5 |
+| jinja2-cli | 1.0.1 |
+| Markdown | 3.10.3 |
+| PyYAML | 6.0.3 |
+| Pillow | from Ubuntu (python3-pil) |
+
+The KiKit commit has two fixes for KiCad 10 that are not in a KiKit release yet:
+
+* A workaround for the KiCad SWIG iterator change.
+* KiKit keeps KiCad 10 variants in generated panels.
+
+Each image also has a version tag, for example `ghcr.io/slintak/kicad-builder:10.0.7`.
+Use a version tag in CI if you want the same tools in every build.
+
+## Python packages
+
+Ubuntu 24.04 and newer mark the system Python as "externally managed" (PEP 668).
+The image installs KiKit and PcbDraw into the system Python. They need the `pcbnew`
+module from the KiCad package. The image sets `PIP_BREAK_SYSTEM_PACKAGES=1`.
+Thus `pip install` works in your CI job without extra flags.
+
+## Included tools
+
+* KiCad 10.0.7, with the symbol, footprint and 3D model libraries
 * KiKit
-* PcbDraw (latest, from source)
-* Python 3, pip, and Markdown
-* jinja2-cli
-* xsltproc, rsync, latexmk, cmark, librsvg2-bin, and more
+* PcbDraw
+* Python 3, pip, Markdown and jinja2-cli
+* LaTeX (pdflatex, latexmk, pdfjam) and pandoc
+* xsltproc, rsync, cmark, librsvg2-bin, xz-utils and more
