@@ -54,5 +54,8 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ${{ inputs.artifact-name }}
-          path: ${{ inputs.directory }}/build
+          # The release ZIP in the build root has the same files again: leave it out.
+          path: |
+            ${{ inputs.directory }}/build
+            !${{ inputs.directory }}/build/*.zip
           if-no-files-found: warn

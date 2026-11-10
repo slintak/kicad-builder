@@ -86,6 +86,8 @@ def panelize(project: Project) -> dict[str, Path]:
         raise RuntimeError("KiKit did not write the panel")
     for lock in paths["dir"].glob("~*.lck"):
         lock.unlink(missing_ok=True)
+    # KiCad writes local view settings next to the panel; they are not an output.
+    paths["pcb"].with_suffix(".kicad_prl").unlink(missing_ok=True)
     keep_frame_fill(paths["pcb"], project.pcb)
     return paths
 
