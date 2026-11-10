@@ -1,0 +1,62 @@
+{
+  "layout": {
+    "type": "grid",
+    "rows": 2,
+    "cols": 2,
+    "hspace": "0mm",
+    "vspace": "0mm",
+    "renameref": "{orig}"
+  },
+  "tabs": {
+    "type": "full"
+  },
+  "cuts": {
+    "type": "vcuts",
+    "layer": "Cmts.User",
+    "clearance": "2mm"
+  },
+  "framing": {
+    "type": "railstb",
+    "width": "7mm",
+    "hspace": "0mm",
+    "vspace": "0mm",
+    "cuts": "both"
+  },
+  "tooling": {
+    "type": "3hole",
+    "hoffset": "3mm",
+    "voffset": "3.5mm",
+    "size": "1.152mm"
+  },
+  "fiducials": {
+    "type": "3fid",
+    "hoffset": "9mm",
+    "voffset": "4mm",
+    "coppersize": "1mm",
+    "opening": "2mm"
+  },
+  "text": {
+    "type": "simple",
+    "text": "kicad-fab demo panel",
+    "anchor": "mt",
+    "voffset": "3.5mm",
+    "hjustify": "center",
+    "vjustify": "center",
+    "width": "1.2mm",
+    "height": "1.2mm",
+    "thickness": "0.2mm",
+    "layer": "F.SilkS"
+  },
+  "post": {
+    "millradius": "1mm"
+  },
+  "copperfill": {
+    "type": "hatched",
+    "layers": "F.Cu,B.Cu",
+    "clearance": "1mm",
+    "edgeclearance": "1mm",
+    "width": "1mm",
+    "spacing": "1mm",
+    "orientation": "45deg"
+  }
+}

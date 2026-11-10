@@ -1,0 +1,1 @@
+(fp_lib_table (version 7) (lib (name "demo") (type "KiCad") (uri "${KIPRJMOD}/demo.pretty") (options "") (descr "kicad-fab demo footprints")))

@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "kicad-fab"
+dynamic = ["version"]
+description = "Make fabrication and release files for a KiCad project (JLCPCB rules)"
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.11"
+# KiCad (pcbnew module, kicad-cli), KiKit and shapely come from the Docker image.
+dependencies = []
+
+[project.scripts]
+kicad-fab = "kicad_fab.cli:main"
+
+[tool.setuptools.dynamic]
+version = { attr = "kicad_fab.__version__" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

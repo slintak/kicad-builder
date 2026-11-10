@@ -1,0 +1,8 @@
+# kicad-fab configuration of the demo board (used by the tests)
+fab_house = "jlcpcb"
+boards = 10
+spares = { "0402" = 10, "0603" = 5, default = 0 }
+
+[assembly]
+# The pin header is soldered by hand. It stays in the Mouser order.
+exclude = ["J1"]

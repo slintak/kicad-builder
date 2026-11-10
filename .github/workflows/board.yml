@@ -1,0 +1,58 @@
+# Reusable workflow for board repositories: make all fabrication files with kicad-fab
+# and upload the output directory as an artifact. See README.md for an example caller.
+name: Board fabrication files
+
+on:
+  workflow_call:
+    inputs:
+      image:
+        description: kicad-builder image
+        type: string
+        default: ghcr.io/slintak/kicad-builder:latest
+      directory:
+        description: Directory of the KiCad project in the repository
+        type: string
+        default: "."
+      args:
+        description: More arguments for "kicad-fab build", for example "--wip" or "--skip step"
+        type: string
+        default: ""
+      artifact-name:
+        description: Name of the uploaded artifact
+        type: string
+        default: fabrication-files
+    outputs:
+      artifact-name:
+        description: Name of the uploaded artifact
+        value: ${{ jobs.build.outputs.artifact-name }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: ${{ inputs.image }}
+    outputs:
+      artifact-name: ${{ inputs.artifact-name }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          # All tags: "git describe" gives the version of the release ZIP.
+          fetch-depth: 0
+
+      - name: kicad-fab build
+        env:
+          DIR: ${{ inputs.directory }}
+          ARGS: ${{ inputs.args }}
+        run: |
+          git config --global --add safe.directory '*'
+          # shellcheck disable=SC2086
+          kicad-fab build $ARGS "$DIR"
+
+      - name: Upload the output directory
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ inputs.artifact-name }}
+          path: ${{ inputs.directory }}/build
+          if-no-files-found: warn
