@@ -169,3 +169,16 @@ for zone in frame:
 def test_frame_copper_fill_on_all_rail_parts(built):
     """V-cuts cut the rails into parts. Every part of a rail gets the frame copper."""
     run_python(FRAME_FILL, str(built["out"] / f"panel/{BOARD}_panel.kicad_pcb"))
+
+
+def test_panel_plugin_dir(tmp_path):
+    """KiKit plugin paths may be relative to the project or to a parent directory."""
+    from kicad_fab.panel import plugin_dir
+
+    project = tmp_path / "repo" / "board"
+    project.mkdir(parents=True)
+    (project / "local.py").write_text("")
+    (tmp_path / "repo" / "board" / "rails.py").write_text("")
+    assert plugin_dir(project, {}) == project
+    assert plugin_dir(project, {"framing": {"code": "local.py.Rails"}}) == project
+    assert plugin_dir(project, {"framing": {"code": "board/rails.py.Rails"}}) == tmp_path / "repo"

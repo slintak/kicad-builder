@@ -9,6 +9,7 @@ import traceback
 from pathlib import Path
 
 from . import __version__
+from . import kicad
 from .config import ConfigError, find_project
 from .kicad import ToolError
 from .log import error, info
@@ -57,6 +58,7 @@ def main(argv: list[str] | None = None) -> int:
 
         print(json.dumps(versions(), indent=2))
         return 0
+    kicad.ensure_lib_tables()
     try:
         project = find_project(args.dir, args.out, args.wip, args.release_version)
     except ConfigError as e:

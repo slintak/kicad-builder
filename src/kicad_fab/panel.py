@@ -81,15 +81,44 @@ def panelize(project: Project) -> dict[str, Path]:
     paths["override"].write_text(json.dumps(override, indent=2) + "\n", encoding="utf-8")
     paths["pcb"].unlink(missing_ok=True)
     run(["kikit", "panelize", "-p", project.panel_file, "-p", paths["override"], "--dump", paths["preset"],
-         project.pcb, paths["pcb"]], cwd=project.dir, retries=2)
+         project.pcb, paths["pcb"]], cwd=plugin_dir(project.dir, user), retries=2)
     if not paths["pcb"].is_file():
         raise RuntimeError("KiKit did not write the panel")
     for lock in paths["dir"].glob("~*.lck"):
         lock.unlink(missing_ok=True)
+    keep_frame_fill(paths["pcb"], project.pcb)
     # KiCad writes local view settings next to the panel; they are not an output.
     paths["pcb"].with_suffix(".kicad_prl").unlink(missing_ok=True)
-    keep_frame_fill(paths["pcb"], project.pcb)
     return paths
+
+
+def _plugin_files(preset) -> list[str]:
+    """Python files of KiKit plugins in a preset ("code": "path/plugins.py.ClassName")."""
+    out = []
+    if isinstance(preset, dict):
+        for key, value in preset.items():
+            if key == "code" and isinstance(value, str) and ".py" in value:
+                out.append(value.split(".py", 1)[0] + ".py")
+            else:
+                out.extend(_plugin_files(value))
+    return out
+
+
+def plugin_dir(project_dir: Path, preset: dict) -> Path:
+    """Working directory for KiKit: KiKit opens plugin files relative to it.
+
+    A preset can name a plugin relative to the project directory or to a parent
+    directory (for example the repository root). Use the nearest directory in which
+    all plugin files exist.
+    """
+    files = _plugin_files(preset)
+    if not files:
+        return project_dir
+    for base in [project_dir, *project_dir.resolve().parents][:5]:
+        if all((base / f).is_file() for f in files):
+            return base
+    warn(f"KiKit plugin files not found: {', '.join(files)}")
+    return project_dir
 
 
 def keep_frame_fill(panel_pcb: Path, source_pcb: Path) -> int:

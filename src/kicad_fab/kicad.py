@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import lzma
+import os
 import shutil
 import subprocess
 from pathlib import Path
@@ -37,6 +38,32 @@ def run(args: list[str], ok_codes: tuple[int, ...] = (0,), cwd: Path | None = No
         raise ToolError(f"{args[0]} {args[1] if len(args) > 1 else ''} failed (exit code {result.returncode})"
                         + (f":\n{output}" if output else ""))
     return result
+
+
+TEMPLATE_DIR = Path("/usr/share/kicad/template")
+
+
+def ensure_lib_tables() -> list[Path]:
+    """Give KiCad the global symbol and footprint library tables of the installation.
+
+    Without a user configuration (a fresh HOME in a container), KiCad has empty global
+    tables, so ERC and DRC report the stock libraries (power, Device, Resistor_SMD, ...)
+    as missing. Copy the installed templates when the user has no tables.
+    """
+    version = ".".join(cli_version().split(".")[:2])
+    if not version or not TEMPLATE_DIR.is_dir():
+        return []
+    config = Path(os.environ.get("XDG_CONFIG_HOME") or Path.home() / ".config") / "kicad" / version
+    written = []
+    for name in ("sym-lib-table", "fp-lib-table"):
+        src, dst = TEMPLATE_DIR / name, config / name
+        if src.is_file() and not dst.exists():
+            dst.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copyfile(src, dst)
+            written.append(dst)
+    if written:
+        info("KiCad global library tables from " + str(TEMPLATE_DIR))
+    return written
 
 
 def cli_version() -> str:

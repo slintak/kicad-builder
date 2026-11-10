@@ -7,7 +7,7 @@ ARG KICAD_VERSION=10.0.8
 # and for tab fillets on curved board outlines (2026-11-08).
 ARG KIKIT_REF=2aa564ff6019560e18553b2c7d16c875fa417d63
 ARG PCBDRAW_REF=3dd07c63179172746e9f28facd8800814c2185a1
-ARG BUILDER_VERSION=1.0.1
+ARG BUILDER_VERSION=1.0.2
 
 LABEL org.opencontainers.image.title="kicad-builder" \
       org.opencontainers.image.description="KiCad, KiKit and kicad-fab: fabrication and release files for KiCad projects" \
@@ -36,7 +36,7 @@ RUN apt-get update && \
     cmark rsync xsltproc librsvg2-bin libnng1 libjpeg-dev zlib1g-dev xz-utils fontconfig \
     texlive-latex-base texlive-fonts-recommended texlive-latex-recommended texlive-latex-extra \
     texlive-extra-utils texlive-science texlive-lang-european latexmk fonts-freefont-ttf \
-    build-essential pandoc && \
+    build-essential pandoc unixodbc libsqliteodbc && \
     rm -rf /var/lib/apt/lists/*
 
 # Install KiCad 10 from the KiCad PPA, with an exact version.
