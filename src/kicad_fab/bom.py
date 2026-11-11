@@ -132,7 +132,10 @@ def order_parts(parts: list[Part]) -> list[Part]:
 
 
 def assembly_parts(parts: list[Part], project: Project, sides: dict[str, str] | None = None) -> list[Part]:
-    """Parts the assembler places. sides: reference -> 'Top' or 'Bottom' (from the PCB)."""
+    """Parts the assembler places. sides: reference -> 'Top' or 'Bottom' (from the PCB).
+    sides = "none" in the config: bare PCB order, the assembler places nothing."""
+    if project.sides == "none":
+        return []
     out = []
     for p in order_parts(parts):
         if not p.on_board or not p.in_pos or p.ref in project.assembly_exclude:

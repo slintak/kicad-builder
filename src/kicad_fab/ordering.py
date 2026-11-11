@@ -206,23 +206,11 @@ def write_readme(build, path: Path) -> Path:
                 "\"Panel by customer. V-cut lines are in the outline layer (GM1) and are marked with V-CUT text. "
                 "All other lines in the outline layer are routed edges.\"", ""]
 
-    out += ["### Assembly", "",
-            "| Order form | Value |", "|---|---|",
-            "| PCBA type | Standard (Economic PCBA does not accept V-cut panels) |" if panel else
-            "| PCBA type | Economic or Standard |",
-            f"| Assembly side | {', '.join(sides) or 'top'} |",
-            f"| PCBA qty | {project.boards} boards |",
-            "| Tooling holes | added by customer |" if panel else "| Tooling holes | added by JLCPCB |",
-            f"| BOM | `{'panel/' + name + '_panel_bom_jlcpcb.csv' if panel else 'fab/../bom/' + name + '_bom_jlcpcb.csv'}` "
-            f"({lines_jlc} lines) |",
-            f"| CPL | `{'panel/' + name + '_panel_pos_jlcpcb.csv' if panel else 'fab/' + name + '_pos_jlcpcb.csv'}` |"]
-    if panel:
-        out += ["| Panel data | \"Complete File, just proceed with my own files\": the BOM and CPL describe the "
-                "whole panel, with unique designators (C1_1 ... C1_n). The silkscreen shows C1 on every board. |"
-                if project.designators == "unique" else
-                "| Panel data | the CPL repeats each designator once per board |"]
-    out += [f"| Not assembled (hand soldered) | {', '.join(excluded) or 'none'} |", "",
-            "Check the part placement and the rotation in the JLCPCB preview before you confirm the order.", ""]
+    if project.sides == "none":
+        out += ["### Assembly", "",
+                "No assembly (`assembly.sides = \"none\"`): order the bare PCB. All parts are soldered by hand.", ""]
+    else:
+        out += _assembly_section(project, name, panel, sides, lines_jlc, excluded)
 
     out += ["## Parts bought at Mouser", "",
             f"`bom/{name}_bom_mouser.csv` has the Mouser numbers for {project.boards} boards (with spares), the "
@@ -257,3 +245,25 @@ def write_readme(build, path: Path) -> Path:
             "board (or panel) outline.", ""]
     path.write_text("\n".join(out), encoding="utf-8")
     return path
+
+
+def _assembly_section(project, name: str, panel, sides: list, lines_jlc: int, excluded: list) -> list[str]:
+    out = ["### Assembly", "",
+           "| Order form | Value |", "|---|---|",
+           "| PCBA type | Standard (Economic PCBA does not accept V-cut panels) |" if panel else
+            "| PCBA type | Economic or Standard |",
+            f"| Assembly side | {', '.join(sides) or 'top'} |",
+            f"| PCBA qty | {project.boards} boards |",
+            "| Tooling holes | added by customer |" if panel else "| Tooling holes | added by JLCPCB |",
+            f"| BOM | `{'panel/' + name + '_panel_bom_jlcpcb.csv' if panel else 'fab/../bom/' + name + '_bom_jlcpcb.csv'}` "
+            f"({lines_jlc} lines) |",
+            f"| CPL | `{'panel/' + name + '_panel_pos_jlcpcb.csv' if panel else 'fab/' + name + '_pos_jlcpcb.csv'}` |"]
+    if panel:
+        out += ["| Panel data | \"Complete File, just proceed with my own files\": the BOM and CPL describe the "
+                "whole panel, with unique designators (C1_1 ... C1_n). The silkscreen shows C1 on every board. |"
+                if project.designators == "unique" else
+                "| Panel data | the CPL repeats each designator once per board |"]
+    out += [f"| Not assembled (hand soldered) | {', '.join(excluded) or 'none'} |", "",
+            "Check the part placement and the rotation in the JLCPCB preview before you confirm the order.", ""]
+
+    return out

@@ -59,7 +59,7 @@ DEFAULTS: dict = {
 }
 
 FAB_HOUSES = ("jlcpcb",)
-SIDES = ("auto", "both", "top", "bottom")
+SIDES = ("auto", "both", "top", "bottom", "none")
 DESIGNATORS = ("unique", "repeat")
 
 

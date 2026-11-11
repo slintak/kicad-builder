@@ -187,3 +187,21 @@ def test_panel_plugin_dir(tmp_path):
     assert plugin_dir(project, {}) == project
     assert plugin_dir(project, {"framing": {"code": "local.py.Rails"}}) == project
     assert plugin_dir(project, {"framing": {"code": "board/rails.py.Rails"}}) == tmp_path / "repo"
+
+
+def test_bare_pcb(tmp_path):
+    """assembly.sides = "none": bare PCB order, no assembly files and no LCSC warnings."""
+    project = copy_demo(tmp_path / "demo")
+    cfg = project / "kicad-fab.toml"
+    cfg.write_text(cfg.read_text(encoding="utf-8").replace('exclude = ["J1"]', 'exclude = ["J1"]\nsides = "none"'),
+                   encoding="utf-8")
+    result = run_fab("build", str(project), "--skip", "step,render,panel,panel-render,zip")
+    assert result.returncode == 0, result.stderr[-3000:]
+    out = project / "build"
+    rules = {f["rule"] for f in manifest(out)["checks"]["findings"]}
+    assert "no_lcsc" not in rules
+    readme = (out / "README.md").read_text(encoding="utf-8")
+    assert "order the bare PCB" in readme and "PCBA type" not in readme
+    jlc = (out / f"bom/{BOARD}_bom_jlcpcb.csv").read_text(encoding="utf-8").strip().splitlines()
+    assert len(jlc) == 1
+    assert (out / f"bom/{BOARD}_bom_mouser.csv").read_text(encoding="utf-8").count("\n") > 1
