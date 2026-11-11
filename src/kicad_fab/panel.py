@@ -311,7 +311,20 @@ def check_panel(project: Project, source, panel, preset: dict, copies: list, ass
         margins = {}
     rail_sides = {"railstb": ("top", "bottom"), "railslr": ("left", "right"),
                   "frame": ("top", "bottom", "left", "right"), "tightframe": ("top", "bottom", "left", "right")}
-    if ftype not in rail_sides:
+    if ftype == "plugin" and margins:
+        # A KiKit framing plugin: measure the rails. A side with board-free margin is a rail.
+        widths = {k: v for k, v in margins.items() if v > 1.0}
+        measurements["rail_width_mm"] = {k: round(v, 3) for k, v in widths.items()}
+        pairs = [(a, b) for a, b in (("top", "bottom"), ("left", "right"))
+                 if widths.get(a, 0) >= RAIL_MIN - TOL and widths.get(b, 0) >= RAIL_MIN - TOL]
+        if pairs:
+            rules.ok("rails", "rails (framing plugin) " + ", ".join(f"{k} {v:.2f} mm" for k, v in widths.items()),
+                     min(min(widths[a], widths[b]) for a, b in pairs), RAIL_MIN)
+        else:
+            rules.add("rails", "error", "framing plugin: no two opposite rails >= "
+                      f"{RAIL_MIN:g} mm (" + (", ".join(f"{k} {v:.2f} mm" for k, v in widths.items()) or "none")
+                      + ")", None, RAIL_MIN)
+    elif ftype not in rail_sides:
         rules.add("rails", "error", f"no rails (framing type '{ftype}'); JLCPCB assembly needs rails >= "
                   f"{RAIL_MIN:g} mm", None, RAIL_MIN)
     else:

@@ -95,13 +95,19 @@ def _items(violation: dict) -> str:
 def check_erc(report: Path, strict: bool) -> Findings:
     findings = Findings()
     data = json.loads(report.read_text(encoding="utf-8"))
+    excluded = 0
     for sheet in data.get("sheets", []):
         for v in sheet.get("violations", []):
+            if v.get("excluded"):
+                excluded += 1
+                continue
             text = f"{v.get('description')}{_items(v)} (sheet {sheet.get('path', '/')})"
             if v.get("severity") == ERROR or strict:
                 findings.error("erc", v.get("type", "?"), text)
             else:
                 findings.warning("erc", v.get("type", "?"), text)
+    if excluded:
+        info(f"ERC: {excluded} excluded item(s) (exclusions in the project) are not checked")
     return findings
 
 
@@ -109,8 +115,12 @@ def check_drc(report: Path, strict: bool, wip: bool) -> Findings:
     """Layout findings are warnings in a work in progress. Schematic parity is always strict."""
     findings = Findings()
     data = json.loads(report.read_text(encoding="utf-8"))
+    excluded = 0
     for group in ("violations", "unconnected_items", "schematic_parity"):
         for v in data.get(group, []):
+            if v.get("excluded"):
+                excluded += 1
+                continue
             text = f"{v.get('description')}{_items(v)}"
             source = "parity" if group == "schematic_parity" else "drc"
             if group == "schematic_parity":
@@ -121,6 +131,8 @@ def check_drc(report: Path, strict: bool, wip: bool) -> Findings:
                 findings.error(source, v.get("type", "?"), text)
             else:
                 findings.warning(source, v.get("type", "?"), text)
+    if excluded:
+        info(f"DRC: {excluded} excluded item(s) (exclusions in the board) are not checked")
     return findings
 
 
