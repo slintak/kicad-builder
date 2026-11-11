@@ -26,7 +26,7 @@ COMMANDS = {
     "render": "renders of the board",
     "zip": "manifest and release ZIP of the files in the output directory",
 }
-SKIPPABLE = ("schematic", "step", "render", "panel")
+SKIPPABLE = ("schematic", "step", "render", "panel", "panel-render", "zip")
 
 
 def _parser() -> argparse.ArgumentParser:
@@ -78,8 +78,8 @@ def main(argv: list[str] | None = None) -> int:
         if unknown:
             error(f"--skip: unknown step(s) {', '.join(sorted(unknown))}")
             return 2
-        if "render" in skip:
-            project.cfg["_skip_render"] = True
+        if "panel-render" in skip:
+            project.cfg["_skip_panel_render"] = True
 
     plan = {
         "build": ["check_reports", "check_bom", "schematic", "bom_files", "pos", "gerbers", "panel", "step",
@@ -121,7 +121,8 @@ def main(argv: list[str] | None = None) -> int:
             build.readme()
         build.mark()
         build.manifest()
-        build.release_zip()
+        if "zip" not in skip:
+            build.release_zip()
     else:
         build.mark()
         if args.command == "check":

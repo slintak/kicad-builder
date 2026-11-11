@@ -231,19 +231,27 @@ def write_readme(build, path: Path) -> Path:
             f"`bom/{name}_bom_alternates.csv` lists each alternate; `bom/{name}_bom_other.csv` lists parts "
             "with neither a Mouser nor an LCSC number.", ""]
 
+    def have(rel: str) -> bool:
+        return build.path(rel).exists()
+
     out += ["## Files", "",
-            "| Path | Content |", "|---|---|",
-            f"| `{name}_schematic.pdf` | schematic |",
-            f"| `fab/{name}_gerbers.zip` | Gerbers and drill files of one board |",
+            "| Path | Content |", "|---|---|"]
+    if have(f"{name}_schematic.pdf"):
+        out += [f"| `{name}_schematic.pdf` | schematic |"]
+    out += [f"| `fab/{name}_gerbers.zip` | Gerbers and drill files of one board |",
             f"| `fab/{name}_pos_jlcpcb.csv` | positions of one board |",
-            f"| `bom/` | BOM files: JLCPCB, Mouser, alternates, other |"]
+            "| `bom/` | BOM files: JLCPCB, Mouser, alternates, other |"]
     if panel:
         out += [f"| `panel/{name}_panel_gerbers.zip` | Gerbers and drill files of the panel |",
                 f"| `panel/{name}_panel_bom_jlcpcb.csv`, `..._pos_jlcpcb.csv` | assembly files of the panel |",
-                f"| `panel/{name}_panel.png`, `panel/{name}_panel.kicad_pcb` | panel render and board file |"]
-    out += [f"| `{name}.step.xz` | 3D model |",
-            "| `render/` | board renders |",
-            "| `reports/` | ERC, DRC and panel check |",
+                f"| `panel/{name}_panel.kicad_pcb` | panel board file |"]
+        if have(f"panel/{name}_panel.png"):
+            out += [f"| `panel/{name}_panel.png` | panel render |"]
+    if have(f"{name}.step.xz"):
+        out += [f"| `{name}.step.xz` | 3D model |"]
+    if have("render"):
+        out += ["| `render/` | board renders |"]
+    out += ["| `reports/` | ERC, DRC and panel check |",
             "| `manifest.json` | versions, checks and SHA-256 of all files |", ""]
     out += ["All coordinates in the Gerber, drill and CPL files start at the lower left corner of the "
             "board (or panel) outline.", ""]

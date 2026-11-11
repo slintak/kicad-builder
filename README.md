@@ -88,7 +88,9 @@ kicad-fab versions          # tool versions as JSON
 ```
 
 Options: `--out DIR` (default `DIR/build`), `--wip`, `--release-version TEXT`
-(default: `git describe`), and for `build`: `--skip schematic,panel,step,render`.
+(default: `git describe`), and for `build`: `--skip schematic,panel,panel-render,step,render,zip`
+(`render` is the board renders, `panel-render` the panel PNG, `zip` the release ZIP;
+leave the release ZIP out when a CI artifact already holds the files).
 
 The exit code is not 0 if a check finds an error. `build` makes all outputs also
 when a check fails, then it puts `DO-NOT-ORDER.txt` into the fab directories and ZIP
@@ -281,7 +283,7 @@ The `latest` tag and the `10.0.8` tag contain these versions:
 | Ubuntu | 26.04 LTS |
 | KiCad | 10.0.8 (PPA `kicad/kicad-10.0-releases`) |
 | Python | 3.14 (Ubuntu package) |
-| kicad-fab | 1.0.2 (this repository) |
+| kicad-fab | 1.0.3 (this repository) |
 | KiKit | 1.8.1 and later fixes from master, commit `2aa564ff6019560e18553b2c7d16c875fa417d63` |
 | PcbDraw | fork `slintak/PcbDraw`, commit `3dd07c63179172746e9f28facd8800814c2185a1` |
 | mistune | 2.0.5 |
@@ -298,8 +300,8 @@ The KiKit commit has fixes for KiCad 10 that are not in a KiKit release yet:
 * Tab fillets on curved and finely segmented board outlines, and faster panels.
 
 Image tags: `latest` (from the main branch), `<KiCad version>` (for example `10.0.8`)
-and `<KiCad version>-<kicad-fab version>` (for example `10.0.8-1.0.2`, from the tag
-`v1.0.2`). Use a version tag in CI if you want the same tools in every build.
+and `<KiCad version>-<kicad-fab version>` (for example `10.0.8-1.0.3`, from the tag
+`v1.0.3`). Use a version tag in CI if you want the same tools in every build.
 Each week, a CI job tries the newest KiCad 10 package and KiKit release and opens
 an issue if the tests fail.
 

@@ -53,17 +53,22 @@ def test_check_fails_on_drc_error(tmp_path):
 def test_build_fails_and_marks_outputs(tmp_path):
     project = copy_demo(tmp_path / "demo")
     short_circuit(project)
-    result = run_fab("build", str(project), "--skip", "step,render")
+    result = run_fab("build", str(project), "--skip", "step,render,panel-render,zip")
     assert result.returncode != 0
     out = project / "build"
     assert (out / "fab/DO-NOT-ORDER.txt").is_file()
     assert "DO-NOT-ORDER.txt" in zip_names(out / f"fab/{BOARD}_gerbers.zip")
+    # skipped steps: no release ZIP, no renders, and the README lists only files that exist
+    assert not list(out.glob(f"{BOARD}-*.zip"))
+    assert not (out / "render").exists() and not (out / f"panel/{BOARD}_panel.png").exists()
+    readme = (out / "README.md").read_text(encoding="utf-8")
+    assert "render/" not in readme and "_panel.png" not in readme and ".step.xz" not in readme
 
 
 def test_wip_option(tmp_path):
     project = copy_demo(tmp_path / "demo")
     short_circuit(project)
-    result = run_fab("build", str(project), "--wip", "--skip", "step,render")
+    result = run_fab("build", str(project), "--wip", "--skip", "step,render,panel-render")
     assert result.returncode == 0, result.stderr[-3000:]
     out = project / "build"
     for d in ("bom", "fab", "panel"):

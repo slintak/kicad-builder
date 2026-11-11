@@ -139,7 +139,7 @@ class Build:
         plotted = pcb.plot_fab_files(paths["pcb"], pdir / f"{self.name}_panel_gerbers.zip",
                                      vcut_layer=self.project.vcut_layer, copies=copies)
         info(f"panel outline Gerber: {plotted['vcut_lines']} V-cut lines, {plotted['vcut_texts']} V-CUT texts")
-        if self.project.cfg.get("_skip_render"):
+        if self.project.cfg.get("_skip_panel_render"):
             return
         info("panel render")
         kicad.render(paths["pcb"], pdir / f"{self.name}_panel.png", self.project.cfg["render"]["args"], "top")

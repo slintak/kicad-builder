@@ -1,3 +1,3 @@
 """kicad-fab: fabrication and release files for a KiCad project."""
 
-__version__ = "1.0.2"
+__version__ = "1.0.3"

@@ -84,6 +84,7 @@ def test_readme(built):
     """README.md in the build directory tells how to order the board."""
     text = (built["out"] / "README.md").read_text(encoding="utf-8")
     for needle in ("## Board", "## Panel", "## Order at JLCPCB", "Panel by Customer", "rows x",
-                   "Complete File", "## Parts bought at Mouser", "Stackup in the board file"):
+                   "Complete File", "## Parts bought at Mouser", "Stackup in the board file",
+                   "_panel.png", "render/", ".step.xz"):
         assert needle in text, needle
     assert any(f["path"] == "README.md" for f in manifest(built["out"])["files"])
